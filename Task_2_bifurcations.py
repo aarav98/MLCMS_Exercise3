@@ -4,65 +4,59 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as grid_spec
 
-fig = plt.figure(figsize=(10, 15))
-gs = grid_spec.GridSpec(nrows=3, ncols=2, height_ratios=[1, 1, 2])
-ax1 = fig.add_subplot(gs[0, 0])
-ax2 = fig.add_subplot(gs[0, 1])
-x, y = np.meshgrid(np.linspace(-1, 1, 10), np.linspace(-1, 1, 10))
+
+def bifurcations(alpha_domain=linspace(-2, 8)):
+    """
+    This method plots the bifurcation diagram for the given equations in Task 2 of exercise 3 over specified
+    alpha domain
+    :param alpha_domain:
+    :return:
+    """
+    fig, f_axes = plt.subplots(ncols=2, nrows=1, figsize=(14, 6))
+    plot(alpha_domain, first_eqn, r'$\alpha - x^2$', f_axes[0])
+    plot(alpha_domain, second_eqn, r'$\alpha - 2x^2 - 3$', f_axes[1])
+    plt.show()
 
 
-# stable equilibrium
-def first_eqn_pos(alpha):
+def plot(domain, equation, equation_text, axes):
+    """
+    This method plots the bifurcation diagram for the specified equation on the specified alpha domain
+    :param domain:
+    :param equation:
+    :param equation_text:
+    :param axes:
+    :return:
+    """
+    pos, neg, unsteady, point = equation(domain)
+    axes.plot(domain, pos, 'b-', label='stable equilibrium', linewidth=3)
+    axes.plot(domain, neg, 'r--', label='unstable equilibrium', linewidth=3)
+    axes.plot(domain, unsteady, 'g--', label='unsteady state', linewidth=3)
+    axes.plot([point[0]], [point[1]], 'ok', label='steady state')
+    axes.set_xlabel('alpha')
+    axes.set_ylabel('x equilibrium points')
+    axes.set_title(equation_text)
+    axes.legend()
+
+
+def first_eqn(alpha):
+    """
+    Given equation alpha - x^2
+    :param alpha:
+    :return: Returns stable/ unstable equilibrium points along with unsteady state of the given equation
+    """
     filtered = np.where(alpha < 0, np.nan, alpha)
-    return np.sqrt(filtered)
+    return np.sqrt(filtered), -np.sqrt(filtered), np.where(alpha < 0, 0, np.nan), (0, 0)
 
 
-# unstable equilibrium
-def first_eqn_neg(alpha):
-    filtered = np.where(alpha < 0, np.nan, alpha)
-    return -np.sqrt(filtered)
-
-
-# unsteady state
-def first_eqn_unsteady(alpha):
-    return np.where(alpha < 0, 0, np.nan)
-
-
-# stable equilibrium
-def second_eqn_pos(alpha):
+def second_eqn(alpha):
+    """
+    Given equation alpha - 2x^2 - 3
+    :param alpha:
+    :return: Returns stable/ unstable equilibrium points along with unsteady state
+    """
     filtered = np.where(alpha < 3, np.nan, alpha)
-    return np.sqrt((filtered - 3) / 2)
+    return np.sqrt((filtered - 3) / 2), -np.sqrt((filtered - 3) / 2), np.where(alpha < 3, 0, np.nan), (3, 0)
 
 
-# unstable equilibrium
-def second_eqn_neg(alpha):
-    filtered = np.where(alpha < 3, np.nan, alpha)
-    return -np.sqrt((filtered - 3) / 2)
-
-
-# unsteady state
-def second_eqn_unsteady(alpha):
-    return np.where(alpha < 3, 0, np.nan)
-
-
-domain = linspace(-2, 8)
-
-ax1.plot(domain, first_eqn_pos(domain), 'b-', label='stable equilibrium', linewidth=3)
-ax1.plot(domain, first_eqn_neg(domain), 'r--', label='unstable equilibrium', linewidth=3)
-ax1.plot(domain, first_eqn_unsteady(domain), 'g--', label='unsteady state', linewidth=3)
-ax1.plot([0], [0], 'ok', label='steady state')
-ax1.set_xlabel('alpha')
-ax1.set_ylabel('x equilibrium points')
-ax1.set_title(r'$\alpha - x^2$')
-ax1.legend()
-
-ax2.plot(domain, second_eqn_pos(domain), 'b-', label='stable equilibrium', linewidth=3)
-ax2.plot(domain, second_eqn_neg(domain), 'r--', label='unstable equilibrium', linewidth=3)
-ax2.plot(domain, second_eqn_unsteady(domain), 'g--', label='unsteady state', linewidth=3)
-ax2.plot([3], [0], 'ok', label='steady state')
-ax2.set_xlabel('alpha')
-ax2.set_ylabel('x equilibrium points')
-ax2.set_title(r'$\alpha - 2x^2 - 3$')
-ax2.legend()
-
-plt.show()
+if __name__ == '__main__':
+    bifurcations(alpha_domain=linspace(-2, 8))

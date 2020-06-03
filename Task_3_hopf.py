@@ -8,7 +8,13 @@ import matplotlib.gridspec as grid_spec
 
 
 def andronov_phase_portrait(alpha):
+    """
+    This plots the andronov hopf phase portrait for the given alpha.
+    :param alpha:
+    :return:
+    """
     x1, x2 = np.meshgrid(np.linspace(-1, 1, 10), np.linspace(-1, 1, 10))
+    # These are the equations given in the exercise
     u = alpha * x1 - x2 - x1 * (x1 ** 2 + x2 ** 2)
     v = x1 + alpha * x2 - x2 * (x1 ** 2 + x2 ** 2)
     plt.quiver(x1, x2, u, v)
@@ -17,33 +23,31 @@ def andronov_phase_portrait(alpha):
     plt.show()
 
 
-def andronov_orbit():
-    alpha = 1
-    dt = .001
-    steps = 8000
-    # initial points
-    point1 = (2.0, 0.0)
-    point2 = (0.5, 0.0)
-
+def andronov_orbit(initial_points=None,
+                   alpha=1,
+                   dt=.001,
+                   steps=8000):
+    """
+    This plots andronov orbits on the same plot for given initial points
+    :param initial_points: List of tuple specifying initial points
+    :param alpha:
+    :param dt: step size
+    :param steps:  number of steps
+    :return:
+    """
+    if initial_points is None:
+        initial_points = [(2.0, 0.0), (0.5, 0.0)]
     fig, ax = plt.subplots()
 
-    ax.annotate(xy=point1, s=rf'$x_0$ = ({point1[0]}, {point1[1]})')
-    # This is implementation using Euler's method at alpha = 1
-    x1, x2 = [point1[0]], [point1[1]]
-    for i in range(steps):
-        point1 += dt * andronov_hopf(point1, alpha)
-        x1.append(point1[0])
-        x2.append(point1[1])
-    ax.plot(np.array(x1), np.array(x2))
-    ax.annotate(xy=point2, s=rf'$x_0$ = ({point2[0]}, {point2[1]})')
-
-    # This is implementation using Euler's method at alpha = 1
-    x1, x2 = [point2[0]], [point2[1]]
-    for i in range(steps):
-        point2 += dt * andronov_hopf(point2, alpha)
-        x1.append(point2[0])
-        x2.append(point2[1])
-    ax.plot(np.array(x1), np.array(x2))
+    for point in initial_points:
+        ax.annotate(xy=point, s=rf'$x_0$ = ({point[0]}, {point[1]})')
+        # This is implementation using Euler's method at alpha = 1
+        x1, x2 = [point[0]], [point[1]]
+        for i in range(steps):
+            point += dt * andronov_hopf(point, alpha)
+            x1.append(point[0])
+            x2.append(point[1])
+        ax.plot(np.array(x1), np.array(x2))
 
     ax.set_xlabel(r'$x_1$')
     ax.set_ylabel(r'$x_2$')
@@ -52,6 +56,12 @@ def andronov_orbit():
 
 
 def andronov_hopf(point, alpha):
+    """
+    This is the given equation in exercise 3 task 3 (equation 8)
+    :param point:
+    :param alpha:
+    :return:
+    """
     x1, x2 = point
     u = alpha * x1 - x2 - x1 * (x1 ** 2 + x2 ** 2)
     v = x1 + alpha * x2 - x2 * (x1 ** 2 + x2 ** 2)
@@ -59,6 +69,11 @@ def andronov_hopf(point, alpha):
 
 
 def cusp_bifurcation():
+    """
+    This is a method to visualize cusp bifurcation for 2 parameters alpha1 and alpha2.
+    This is using the scatter plot to plot the cusp bifurcation surface.
+    :return:
+    """
     alpha_range = linspace(-2, 2)
     alpha1s = []
     alpha2s = []
@@ -81,8 +96,9 @@ def cusp_bifurcation():
     plt.show()
 
 
-# Script for plotting
-for alpha in [-1, 0, 1]:
-    andronov_phase_portrait(alpha)
-andronov_orbit()
-cusp_bifurcation()
+if __name__ == '__main__':
+    #plot phase portrait for alphas proved in the list
+    for alpha in [-1, 0, 1]:
+        andronov_phase_portrait(alpha)
+    andronov_orbit()
+    cusp_bifurcation()
